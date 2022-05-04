@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    let socket, webSocket;
+    // 获取自身id
+    const uid = "666666"
+    if (window.WebSocket) {
+        socket = new WebSocket("ws://localhost:58080/webSocket")
+        socket.onmessage = function (ev) {
+            var rt = document.getElementById("responseText");
+            rt.value = rt.value + "\n" + ev.data;
+        }
+        socket.onopen = function (ev) {
+            var rt = document.getElementById("responseText");
+            rt.value = "链接开启了..."
+            socket.send(JSON.stringify({uid: uid}));
+        }
+        socket.onclose = function (ev) {
+            var rt = document.getElementById("responseText");
+            rt.value = rt.value + "\n" + "链接关闭了...";
+        }
+    } else {
+        alert("当前浏览器不支持webSocket")
+    }
+
+    function send() {
+        const userIdToSend = document.getElementById("userIdToSend").value;
+        const msg = document.getElementById("msgToSend").value;
+        let toSend = JSON.stringify({userIdToSend:userIdToSend,msg:msg});
+        socket.send(toSend);
+    }
+</script>
+
+
+<form onsubmit="return false">
+    <textarea id="responseText" style="height: 150px; width: 300px;"></textarea>
+    <input type="button" value="清空内容" onclick="document.getElementById('responseText').value=''">
+</form>
+
+
+售后发送消息给指定用户<br>
+    userId <input type="text" id="userIdToSend" name="userId"><br>
+    message <input type="text" id="msgToSend" name="msg"><br>
+    <input type="submit" value="send" onclick="send()"><br>
+
+</body>
+</html>
